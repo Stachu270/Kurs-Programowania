@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 		ss >> x;
 		if (ss.fail() || !ss.eof())
 		{
-			cout << argv[i] << " - Bledna dana\n";
+			cout << argv[i] << " - Nieprawidlowa dana\n";
 			continue;
 		}
 		

@@ -31,8 +31,6 @@ class WierszTrojkataPascala
 	
 	int wspolczynnik(int m) throws WrongValueException
 	{
-		//for (int x : row)
-			//System.out.print(x + " ");
 		try { return row[m]; }
 		catch (ArrayIndexOutOfBoundsException ex)
 		{
@@ -51,7 +49,7 @@ public class Test
 		try { x = Integer.parseInt(args[0]); }
 		catch (NumberFormatException ex)
 		{
-			System.out.println(args[0] + " - Nie jest to liczba");
+			System.out.println(args[0] + " - Bledny argument");
 			return;
 		}
 		
