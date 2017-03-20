@@ -1,6 +1,7 @@
 // Michal Slowik
 
 #include <iostream>
+#include <cstdlib>
 #include <cmath>
 #include <exception>
 #include <vector>
@@ -100,9 +101,14 @@ int main(int argc, char *argv[])
 	// sprawdzic czy argc jest odpowiednio duza
 	vector<Figura *> tab;
 	vector<string> args;
-	//string s = argv[1];
 	int cnt = 1;
 	double num;
+	
+	if (argc < 2)
+	{
+		cout << "Zbyt malo parametrow." << endl;
+		exit(1);
+	}
 	
 	for (int i = 1; i < argc; i++)
 		args.push_back(argv[i]);

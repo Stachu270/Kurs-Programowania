@@ -151,6 +151,12 @@ public class Figury
 		Figura tab[] = new Figura[10];
 		int j = 0;
 		
+		if (args.length == 0)
+		{
+			System.out.println("Zbyt malo parametrow.");
+			return;
+		}
+		
 		for (int i = 0; i < args[0].length(); i++)
 		{
 			try 
