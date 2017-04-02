@@ -123,11 +123,12 @@ int main(int argc, char *argv[])
 					tab.push_back(new Okrag(parseDouble(args.at(cnt++))));
 					break;
 				case 'c':
-					tab.push_back(Czworokat::decide(	parseDouble(args.at(cnt++)),
-														parseDouble(args.at(cnt++)),
-														parseDouble(args.at(cnt++)),
-														parseDouble(args.at(cnt++)),
-														parseDouble(args.at(cnt++))));
+					cnt += 5;
+					tab.push_back(Czworokat::decide(	parseDouble(args.at(cnt - 5)),
+														parseDouble(args.at(cnt - 4)),
+														parseDouble(args.at(cnt - 3)),
+														parseDouble(args.at(cnt - 2)),
+														parseDouble(args.at(cnt - 1))));
 					break;
 				case 'p':
 					tab.push_back(new Pieciokat(parseDouble(args.at(cnt++))));
@@ -136,7 +137,7 @@ int main(int argc, char *argv[])
 					tab.push_back(new Szesciokat(parseDouble(args.at(cnt++))));
 					break;
 				default:
-					cout << args[0][i] + " jest nieakceptowalnym znakiem. Poprawne znaki to o, c, p, s.";
+					cout << args[0][i] << " jest nieakceptowalnym znakiem. Poprawne znaki to o, c, p, s.";
 			}
 		}
 		catch (const string &ex)
@@ -230,6 +231,8 @@ Czworokat* Czworokat::decide(double A, double B, double C, double D, double Fi)
 			return new Prostokat(A, B);
 		else if (A > 0 && C > 0 && A == B && C == D)
 			return new Prostokat(A, C);
+		else if (A > 0 && B > 0 && A == D && B == C)
+				return new Prostokat(A, B);
 		throw std::string("Zle wartosci bokow czworokata");
 	}
 	if (A == B && B == C && C == D && A > 0)

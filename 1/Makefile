@@ -1,10 +1,13 @@
-all: parametry.class podzielnik.class program.class
+all: Parametry.class Podzielnik.class Program.class
 
-parametry.class: parametry.java
-	javac parametry.java
+Parametry.class: Parametry.java
+	javac Parametry.java
 
-podzielnik.class: podzielnik.java
-	javac podzielnik.java
+Podzielnik.class: Podzielnik.java
+	javac Podzielnik.java
 
-program.class: program.java
-	javac program.java
+Program.class: Program.java
+	javac Program.java
+
+clean:
+	rm *.class

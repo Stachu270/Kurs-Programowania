@@ -27,6 +27,7 @@ int main(int argc, char **argv)
 {
 	using namespace std;
 	int x;
+	Wiersz *pas = NULL;
 	stringstream ss;
 	
 	if (argc < 2)
@@ -43,13 +44,12 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 	
-	if (x < 0 || x > 32)
+	try { pas = new Wiersz(x); }
+	catch (WrongValueException &ex)
 	{
 		cout << x << " - Nieprawidlowy numer wiersza\n";
 		exit(1);
 	}
-	
-	Wiersz pas(x);
 	
 	for (int i = 2; i < argc; i++)
 	{
@@ -63,19 +63,25 @@ int main(int argc, char **argv)
 			continue;
 		}
 		
-		try { cout << x << " - " << pas.wspolczynnik(x) << endl; }
+		try { cout << x << " - " << pas->wspolczynnik(x) << endl; }
 		catch (const WrongValueException &ex)
 		{
 			cout << x << " - Liczba spoza zakresu\n";
 		}
 	}
 	
+	delete pas;
+	
 	return 0;
 }
 
-Wiersz::Wiersz(int n) : size(n), row(new int[n + 1])
+Wiersz::Wiersz(int n) : size(n)
 {
+	if (n < 0 || n > 33)
+		throw WrongValueException("Argument spoza zakresu");
+	
 	int half_i;
+	row = new int[n + 1];
 	row[0] = 1;
 	
 	for (int i = 0; i < n; i++)

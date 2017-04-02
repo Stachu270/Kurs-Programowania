@@ -7,10 +7,12 @@ class WierszTrojkataPascala
 {
 	int row[];
 	
-	WierszTrojkataPascala(int n)
+	WierszTrojkataPascala(int n) throws WrongValueException
 	{
-		int half_i;
+		if (n < 0 || n > 33)
+			throw new WrongValueException();
 		
+		int half_i;
 		row = new int[n + 1];
 		row[0] = 1;
 		
@@ -53,13 +55,12 @@ public class Test
 			return;
 		}
 		
-		if (x < 0 | x > 32)
+		try { pas = new WierszTrojkataPascala(x); }
+		catch (WrongValueException ex)
 		{
 			System.out.println(x + " - Nieprawidlowy numer wiersza");
 			return;
 		}
-		
-		pas = new WierszTrojkataPascala(x);
 		
 		for (int i = 1; i < args.length; i++)
 		{

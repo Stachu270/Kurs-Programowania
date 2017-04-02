@@ -137,6 +137,8 @@ public class Figury
 				return new Prostokat(a, b);
 			else if (a > 0 && c > 0 && a == b && c == d)
 				return new Prostokat(a, c);
+			else if (a > 0 && b > 0 && a == d && b == c)
+				return new Prostokat(a, b);
 			throw new WrongArgumentsValue();
 		}
 		if (a == b && b == c && c == d && a > 0)
@@ -168,11 +170,12 @@ public class Figury
 						j++;
 						break;
 					case 'c':
-						tab[j] = decide(	Double.parseDouble(args[cnt++]),
-											Double.parseDouble(args[cnt++]),
-											Double.parseDouble(args[cnt++]),
-											Double.parseDouble(args[cnt++]),
-											Double.parseDouble(args[cnt++]));
+						cnt += 5;
+						tab[j] = decide(	Double.parseDouble(args[cnt - 5]),
+											Double.parseDouble(args[cnt - 4]),
+											Double.parseDouble(args[cnt - 3]),
+											Double.parseDouble(args[cnt - 2]),
+											Double.parseDouble(args[cnt - 1]));
 						j++;
 						break;
 					case 'p':

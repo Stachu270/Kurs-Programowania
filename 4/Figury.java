@@ -32,6 +32,9 @@ public class Figury
 			public double pole(double a) { return 1.5 * a * a * Math.sqrt(3); }
 		};
 		
+		// private double a;
+		// One(double d) { a = d; }
+		
 		public abstract double obwod(double x);
 		public abstract double pole(double x);
 	}
@@ -48,6 +51,9 @@ public class Figury
 			public double obwod(double a, double fi) { return 4 * a; }
 			public double pole(double a, double fi) { return a * a * Math.sin(Math.toRadians(fi)); }
 		};
+		
+		// private double a, b;
+		// Two(double x, double y) { a = x; b = y; }
 		
 		public abstract double obwod(double x, double y);
 		public abstract double pole(double x, double y);

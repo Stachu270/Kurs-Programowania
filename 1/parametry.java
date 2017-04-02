@@ -1,4 +1,4 @@
-public class parametry
+public class Parametry
 {
 	public static void main(String args[])
 	{
