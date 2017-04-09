@@ -1,0 +1,107 @@
+// Micha³ S³owik
+
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <sstream>
+#include <stdexcept>
+
+class WrongValueException : public std::range_error
+{
+	public:
+		WrongValueException(std::string s) : range_error(s) {}
+};
+
+class Wiersz
+{
+	private:
+		int size;
+		int *row;
+	public:
+		Wiersz(int n);
+		~Wiersz() { delete[] row; }
+		int wspolczynnik(int m);
+};
+
+int main(int argc, char **argv)
+{
+	using namespace std;
+	int x;
+	Wiersz *pas = NULL;
+	stringstream ss;
+	
+	if (argc < 3)
+	{
+		cout << "Zbyt malo argumentow\n";
+		exit(1);
+	}
+	
+	ss << argv[1];
+	ss >> x;
+	if (ss.fail() || !ss.eof())
+	{
+		cout << argv[1] << " - Bledny argument\n";
+		exit(1);
+	}
+	
+	try { pas = new Wiersz(x); }
+	catch (WrongValueException &ex)
+	{
+		cout << x << " - Nieprawidlowy numer wiersza\n";
+		exit(1);
+	}
+	
+	for (int i = 2; i < argc; i++)
+	{
+		ss.clear();
+		ss.str(argv[i]);
+		
+		ss >> x;
+		if (ss.fail() || !ss.eof())
+		{
+			cout << argv[i] << " - Nieprawidlowa dana\n";
+			continue;
+		}
+		
+		try { cout << pas->wspolczynnik(x) << endl; }
+		catch (const WrongValueException &ex)
+		{
+			cout << x << " - Liczba spoza zakresu\n";
+		}
+	}
+	
+	delete pas;
+	
+	return 0;
+}
+
+Wiersz::Wiersz(int n) : size(n)
+{
+	if (n < 0 || n > 33)
+		throw WrongValueException("Argument spoza zakresu");
+	
+	int half_i;
+	row = new int[n + 1];
+	row[0] = 1;
+	
+	for (int i = 0; i < n; i++)
+	{	
+		half_i = i / 2;
+		
+		if (i % 2)
+			row[half_i + 1] = 2 * row[half_i];
+		
+		for (int j = half_i; j > 0; j--)
+			row[j] += row[j-1];
+	}
+		
+	for (int b = 0, e = n; b < e; b++, e--)
+		row[e] = row[b];
+}
+
+int Wiersz::wspolczynnik(int m)
+{
+	if (m < 0 || m > size)
+		throw WrongValueException("Liczba spoza zakresu");
+	return row[m];
+}
