@@ -1,14 +1,24 @@
 package myproj;
 
+import java.security.*;
 import java.applet.*;
 import java.awt.*;
 import java.util.*;
 import java.awt.geom.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.plaf.basic.*;
 
+/**
+* Board represents a coordinate space that shapes can be drawn on. <br>
+* It implements all shape creation processes and takes care of mouse actions. <br>
+* It is kind of badly designed. For instance it is a listener for save/open/new button when it can have methods
+* for doing so "from the outside".
+* @author Michał Słowik
+* @version 1
+*/
 public class Board extends JPanel implements MouseListener, MouseMotionListener, ActionListener, MouseWheelListener
 {
 	private ShapePlus shp;
@@ -16,14 +26,17 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 	private Mode md;
 	private Point tmp;
 	private JPopupMenu clickMenu;
-	
-	enum Mode {None, DrawRect, DrawCirc, DrawPoly, Modify};
+	private enum Mode {None, DrawRect, DrawCirc, DrawPoly, Modify};
 	
 	private static Color basicColors[] = {	Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray,
 											Color.green, Color.lightGray, Color.magenta, Color.orange,
 											Color.pink, Color.red, Color.white, Color.yellow};
 	private static String nameColors[] = {	"black", "blue", "cyan", "dark gray", "gray", "green",
 											"light gray", "magenta", "orange", "pink", "red", "white", "yellow"};
+	
+	/**
+	* Creates <code>Board</code> instance.
+	*/
 	public Board()
 	{
 		super();
@@ -44,6 +57,21 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 			clickMenu.add(mi);
 		}
 		
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
+		getActionMap().put("delete", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent ae)
+			{
+				if (md == Mode.Modify)
+				{
+					shapeArray.remove(shp);
+					shp = null;
+					md = Mode.None;
+					repaint();
+				}
+			}
+		});
+		
 		//getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "space");
 		/*getActionMap().put("space", new AbstractAction() {
 			@Override
@@ -60,6 +88,10 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 		});*/
 	}
 	
+	/**
+	* Draws the <code>oard</code> with all the shapes.
+	* @param g the <code>Graphics</code> context in which to draw
+	*/
 	private void draw(Graphics g)
 	{
 		Graphics2D g2d = (Graphics2D) g.create();
@@ -73,6 +105,65 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 		g2d.dispose();
 	}
 	
+	/**
+	* Saves the shapes in a file.
+	*/
+	public void save()
+	{
+		for (ShapePlus sp : shapeArray)
+			System.out.println(sp.writeToString());
+		
+		AccessController.doPrivileged(new PrivilegedAction<Void>() {
+			
+			public Void run() {
+				try {
+				FileOutputStream file = new FileOutputStream("abcdef");
+				file.write((byte)16);				
+				file.close();
+				} catch (IOException ioe)
+				{
+					System.out.println(ioe.toString());
+				}
+				return null;
+			}
+		});
+		//System.out.println(System.getProperty("user.dir"));
+		
+		//int ret = fc.showSaveDialog(this.getParent());
+		/*try {
+		if (true)//ret == JFileChooser.APPROVE_OPTION)
+		{
+			//File f = fc.getSelectedFile();
+			//System.out.println(f.canWrite());
+			
+			FileOutputStream file = new FileOutputStream("abcdef");
+			
+			file.write((byte)16);
+			
+			file.close();
+			
+		}
+		} catch (IOException ioe)
+		{
+			System.out.println(ioe.toString());
+		}*/
+	}
+	
+	/**
+	* Loads <code>Board</code> from file.
+	*/
+	public void open()
+	{
+		JFileChooser fc = new JFileChooser();
+		
+		int ret = fc.showSaveDialog(this.getParent());
+		if (ret == JFileChooser.APPROVE_OPTION)
+			;
+	}
+	
+	/**
+	* Paints component. Calls <code>draw</code> function.
+	*/
 	@Override
 	public void paintComponent(Graphics g)
 	{
@@ -80,16 +171,38 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 		draw(g);
 	}
 	
+	/**
+	* Does nothing here.
+	*/
 	@Override
 	public void mouseEntered(MouseEvent e) {}
 	
+	/**
+	* Does nothing here.
+	*/
 	@Override
 	public void mouseExited(MouseEvent e) {}
 	
+	/**
+	* Does nothing here.
+	*/
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
 		switch(md)
+		{
+			
+		}
+	}
+	
+	/**
+	* Responds to mouse being pressed on <code>Board</code> area.
+	*/
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		tmp.setLocation(e.getPoint());
+		switch (md)
 		{
 			case DrawRect:
 				if (!SwingUtilities.isLeftMouseButton(e))
@@ -143,18 +256,6 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 				repaint();
 				break;
 			case Modify:
-				
-				break;
-		}
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent e)
-	{
-		tmp.setLocation(e.getPoint());
-		switch (md)
-		{
-			case Modify:
 				if (!SwingUtilities.isLeftMouseButton(e))
 					break;
 				if (shp.getBounds().contains(e.getPoint()))
@@ -181,6 +282,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 						shapeArray.remove(shp);
 						shapeArray.add(shp);
 						md = Mode.Modify;
+						this.grabFocus();
 						repaint();
 						break;
 					}
@@ -189,6 +291,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 		}
 	}
 	
+	/**
+	* Responds to mouse being released on <code>Board</code> area.
+	*/
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
@@ -199,6 +304,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 		}
 	}
 	
+	/**
+	* Responds to mouse being dragged on <code>Board</code> area.
+	*/
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
@@ -215,9 +323,21 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 				repaint();
 				//System.out.println(e.getPoint().toString());
 				break;
+			case DrawCirc:
+			case DrawRect:
+			case DrawPoly:
+				if (shp != null)
+				{
+					shp.addPoint(e.getPoint());
+					repaint();
+				}
+				break;
 		}
 	}
 	
+	/**
+	* Responds to mouse being moved on <code>Board</code> area.
+	*/
 	@Override
 	public void mouseMoved(MouseEvent e)
 	{
@@ -249,6 +369,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 		}
 	}
 	
+	/**
+	* Responds to buttons being clicked.
+	* It's a badly designed part of the code, because one should add this class as a buttons action listener, 
+	* which is not a very good idea.
+	*/
 	@Override
 	public void actionPerformed(ActionEvent ae)
 	{
@@ -281,7 +406,25 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 					shp = null;
 				md = Mode.DrawPoly;
 				break;
-			default:	// Takes care fo colors buttons
+			case "New":
+				System.out.println("New");
+				shp = null;
+				md = Mode.None;
+				shapeArray.clear();
+				break;
+			case "Open":
+				System.out.println("Open");
+				open();
+				break;
+			case "Save":
+				System.out.println("Save");
+				save();
+				break;
+			case "About program":
+				JOptionPane.showMessageDialog(this, "A simple simple-shape painting program.\n"
+				+ "Nothing to see here. Please disperse.");
+				break;
+			default:	// Takes care of colors buttons
 				int i;
 				for (i = 0; i < basicColors.length; i++)
 					if (ae.getActionCommand().equals(nameColors[i]))
@@ -294,6 +437,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener,
 		repaint();
 	}
 	
+	/**
+	* Responds to mouse wheel being moved while cursor is in <code>Board</code> area.
+	*/
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent me)
 	{

@@ -13,14 +13,25 @@ import javax.swing.plaf.basic.*;
 </applet>
 */
 
+/**
+* Ppaint is an applet designed for creating simple shapes.
+* @author Micha³ S³owik
+* @version 1
+*/
 public class Ppaint extends JApplet
 {
 	private JPanel colorsPane, northPane, mainPane;
+	private JMenuBar menuBar;
+	private JMenu fileMenu, infoMenu;
+	private JMenuItem newFileItem, openFileItem, saveFileItem, infoItem;
 	private JTextField commandText;
 	private static Color basicColors[] = {	Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray,
 											Color.green, Color.lightGray, Color.magenta, Color.orange,
 											Color.pink, Color.red, Color.white, Color.yellow};
 	
+	/**
+	* What can I say more?
+	*/
 	@Override
 	public void init()
 	{
@@ -37,11 +48,33 @@ public class Ppaint extends JApplet
 		}
 	}
 	
+	/**
+	* Called in <code>init()</code> it is just fo clarity purposes
+	*/
 	private void makeGUI()
 	{
 		colorsPane = new JPanel(new GridLayout(2, basicColors.length/2 + 1));
 		JButton btn = new JButton();
 		//btn.setUI(new colorButton(40, Color.red));
+		
+		menuBar = new JMenuBar();
+		
+		fileMenu = new JMenu("File");
+		infoMenu = new JMenu("Info");
+		
+		infoItem = new JMenuItem("About program");
+		newFileItem = new JMenuItem("New");
+		openFileItem = new JMenuItem("Open");
+		saveFileItem = new JMenuItem("Save");
+		
+		infoMenu.add(infoItem);
+		
+		fileMenu.add(newFileItem);
+		fileMenu.add(openFileItem);
+		fileMenu.add(saveFileItem);
+		
+		menuBar.add(fileMenu);
+		menuBar.add(infoMenu);
 		
 		northPane = new JPanel(new FlowLayout());
 		northPane.setBackground(new Color(200, 200, 200));
@@ -64,6 +97,11 @@ public class Ppaint extends JApplet
 		northPane.add(circButton);
 		northPane.add(polyButton);
 		//colorButton im = new colorButton(Color.red);
+		
+		newFileItem.addActionListener(brd);
+		openFileItem.addActionListener(brd);
+		saveFileItem.addActionListener(brd);
+		infoItem.addActionListener(brd);
 		
 		/*btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae)
@@ -95,6 +133,7 @@ public class Ppaint extends JApplet
 		});*/
 		
 		setLayout(new BorderLayout());
+		setJMenuBar(menuBar);
 		add(northPane, BorderLayout.NORTH);
 		add(mainPane, BorderLayout.CENTER);
 		add(commandText, BorderLayout.SOUTH);
